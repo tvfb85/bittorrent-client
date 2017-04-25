@@ -1,11 +1,8 @@
 'use strict';
+const net = require('net');
 const connect = require('../src/connect');
 
 describe("Connect", () => {
-
-  const socket = {
-    on: () => {}
-  }
 
   const peer = {
     port: 'port',
@@ -13,9 +10,9 @@ describe("Connect", () => {
   }
 
   it('creates a new socket with peer', () => {
-    spyOn(socket, 'on');
-    connect(peer, socket);
-    expect(socket.on).toHaveBeenCalled();
-  })
+    spyOn(net.Socket.prototype, "on");
+    connect(peer);
+    expect(net.Socket.prototype.on).toHaveBeenCalled();
+  });
 
 });
