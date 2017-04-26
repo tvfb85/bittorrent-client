@@ -16,7 +16,6 @@ describe("Connect", () => {
     }
   })
 
-
   it('creates a new socket with peer', () => {
     spyOn(net.Socket.prototype, "on");
     connect(peer);
