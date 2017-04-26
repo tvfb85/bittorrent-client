@@ -27,6 +27,15 @@ const pieceMock = (() => {
   return buffer;
 })();
 
+const unchokeId = 1;
+
+const unchokeMock = (() => {
+  const buffer = Buffer.alloc(5);
+  buffer.writeUInt32BE(1, 0); //len
+  buffer.writeUInt8(unchokeId, 4); // id
+  return buffer;
+})();
+
 describe("MessageParser", () => {
 
   it("can identify a handshake message", () => {
@@ -44,6 +53,14 @@ describe("MessageParser", () => {
   it("can allow us to access a message's payload", () => {
     let payloadToCompare = messageParser.parse(pieceMock).payload.block.toString();
     expect(payloadToCompare).toEqual(payload);
+  });
+
+  it("can identify an unchoke message", () => {
+    expect(messageParser.parse(unchokeMock).id).toEqual(unchokeId);
+  });
+
+  it("sets payload to null for unchoke message", () => {
+    expect(messageParser.parse(unchokeMock).payload).toEqual(null);
   });
 
 })
