@@ -15,4 +15,10 @@ describe("Connect", () => {
     expect(net.Socket.prototype.on).toHaveBeenCalled();
   });
 
+  it('should connect to the socket', () => {
+    spyOn(net.Socket.prototype, "connect");
+    connect(peer);
+    expect(net.Socket.prototype.connect).toHaveBeenCalledWith(peer.port, peer.ip);
+  });
+
 });
