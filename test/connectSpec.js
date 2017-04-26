@@ -4,10 +4,18 @@ const connect = require('../src/connect');
 
 describe("Connect", () => {
 
-  const peer = {
-    port: 'port',
-    ip: 'ip'
-  }
+  let dummySocket;
+  let peer;
+
+  beforeEach(() => {
+    dummySocket = new net.Socket();
+
+    peer = {
+      port: 'port',
+      ip: 'ip'
+    }
+  })
+
 
   it('creates a new socket with peer', () => {
     spyOn(net.Socket.prototype, "on");
@@ -22,16 +30,25 @@ describe("Connect", () => {
   });
 
   it('should write to the socket', () => {
-
-    const dummySocket = new net.Socket();
-      dummySocket['connect'] = function() {
-        return dummySocket.write('hello');
-      };
+    dummySocket['connect'] = function() {
+      return dummySocket.write('hello');
+    };
 
     spyOn(dummySocket, "write");
 
     connect(peer, dummySocket);
     expect(dummySocket.write).toHaveBeenCalled();
   });
+
+  it('should listen for data', () => {
+    dummySocket['on'] = function() {
+      return true;
+    };
+
+    spyOn(dummySocket, "on");
+
+    connect(peer, dummySocket);
+    expect(dummySocket.on).toHaveBeenCalledWith('data', console.log);
+  })
 
 });
