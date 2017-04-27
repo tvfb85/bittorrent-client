@@ -74,4 +74,28 @@ describe('message', () => {
 
   });
 
+  describe('buildRequest', () => {
+
+    const payload = {
+      index: 1,
+      begin: 0,
+      length: 128
+    }
+
+    const testRequestMessage = message.buildRequest(payload);
+
+    it('has a length of 17', () => {
+      expect(testRequestMessage.length).toEqual(17);
+    });
+
+    it('has an id of 6', () => {
+      expect(testRequestMessage.slice(4, 5).readUInt8()).toEqual(6);
+    })
+
+    it('writes piece index to the message', () => {
+      const slicedBuffer = testRequestMessage.slice(5, 9)
+      expect(slicedBuffer.readUInt32BE()).toEqual(payload.index)
+    })
+  })
+
 });
