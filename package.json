@@ -11,5 +11,8 @@
   "devDependencies": {
 
     "jasmine-node": "^1.14.5"
+  },
+  "dependencies": {
+    "bencode": "^0.12.0"
   }
 }
