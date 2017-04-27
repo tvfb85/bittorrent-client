@@ -65,11 +65,12 @@ describe("Connect", () => {
   });
 
   describe("dataHandler", () => {
-    // it('calls the callback eventually', () => {
-    //   let theCallback = jasmine.createSpy(()=>{});
-    //   connect.dataHandler('the data',theCallback);
-    //   expect(theCallback).toHaveBeenCalledWith('the data');
-    // });
+    it('calls the callback eventually', () => {
+      let theCallback = jasmine.createSpy(()=>{});
+      let theData = Buffer.from('data');
+      connect.dataHandler(theData, theCallback);
+      expect(theCallback).toHaveBeenCalledWith(theData);
+    });
 
     it('puts the data in a Buffer', ()=>{
       let theCallback = jasmine.createSpy(()=>{});
