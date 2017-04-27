@@ -15,4 +15,8 @@ module.exports = class {
     this._queue.push(piece);
   }
 
+  removeFromQueue() {
+    return this._queue.shift();
+  }
+
 }

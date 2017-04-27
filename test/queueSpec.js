@@ -14,8 +14,13 @@ describe('Queue', () => {
       pieces: '<Buffer >'
     }
   };
-  const queue = new Queue(torrent);
+
   const pieceIndex = 7;
+  let queue;
+
+  beforeEach( () => {
+    queue = new Queue(torrent);
+  });
 
   it('has an empty queue initially', () => {
     expect(queue._queue.length).toEqual(0);
@@ -39,5 +44,12 @@ describe('Queue', () => {
     queue.addToQueue(pieceIndex);
     expect(queue._queue[0].pieceLength).toEqual(torrent.info['piece length']);
   });
+
+  it('removes the first piece from the queue', () => {
+    console.log(queue._queue)
+    queue.addToQueue(pieceIndex);
+    queue.removeFromQueue();
+    expect(queue._queue.length).toEqual(0);
+  })
 
 });
