@@ -9,7 +9,7 @@ const crypto = require('crypto');
 
 describe('message', () => {
 
-  let testBuf;
+  let testHandshake;
   let torrent;
 
   beforeEach(() => {
@@ -23,41 +23,36 @@ describe('message', () => {
             }
           }
         }
-    testBuf = message.buildHandshake(torrent);
+    testHandshake = message.buildHandshake(torrent);
   })
 
   it('should allocate 68 bytes to the buffer', () => {
-    expect(testBuf.length).toEqual(68);
+    expect(testHandshake.length).toEqual(68);
   });
 
   it('should return a buffer', () => {
-    expect(testBuf).toEqual(jasmine.any(Buffer));
+    expect(testHandshake).toEqual(jasmine.any(Buffer));
   });
 
   it('writes the pstrlen to the buffer', () => {
-    expect(testBuf[0]).toEqual(19);
+    expect(testHandshake[0]).toEqual(19);
   });
 
   it('writes the pstr to the buffer', () => {
-    const pstrChunk = testBuf.slice(1,20);
+    const pstrChunk = testHandshake.slice(1,20);
     expect(pstrChunk.toString('utf8')).toEqual('BitTorrent protocol');
   });
 
   it('writes the info hash to the buffer', () => {
-    // message['infoHash'] = function(torrent) {
-    //   const info = bencode.encode(torrent.info);
-    //   return crypto.update(info).digest();
-    // };
     const info = bencode.encode(torrent.info)
-    const torrentInfo = crypto.createHash('sha1').update(info).digest();
-    const infoHashChunk = testBuf.slice(28,48).toString('utf8');
-    const decodedInfoHashChunk = bencode.decode(infoHashChunk);
-    expect(decodedInfoHashChunk).toEqual(torrentInfo);
+    const hashedInfo = crypto.createHash('sha1').update(info).digest();
+    const infoHashFromHandshake = testHandshake.slice(28,48);
+    expect(infoHashFromHandshake.toString()).toEqual(hashedInfo.toString());
   });
 
   it('writes the peer ID to the buffer', () => {
-    const peerIdChunk = testBuf.slice(48,56);
+    const peerIdChunk = testHandshake.slice(48,56);
     expect(peerIdChunk.toString('utf8')).toEqual('-NVNF01-');
-  })
+  });
 
 })
