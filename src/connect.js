@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 const net = require('net');
 const messageParser = require('./messageParser');
 
@@ -17,4 +17,14 @@ module.exports.dataHandler = (data, callback) => {
   let foo = Buffer.concat([newbuffer, data])
   callback(data);
   handshake = false;
+};
+
+module.exports.requestPiece = (socket, pieces, queue) => {
+  while (queue.length()) {
+    let piece = queue.removeFromQueue();
+    if (pieces.needed(piece)) {
+      pieces.addRequested(piece);
+      break;
+    }
+  }
 };
