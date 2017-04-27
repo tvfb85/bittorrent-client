@@ -1,6 +1,6 @@
 'use strict';
 
-const download = require('../src/download');
+const Download = require('../src/download');
 
 describe("Download", () => {
 
@@ -12,10 +12,11 @@ describe("Download", () => {
       pieces: '<Buffer >'
     }
   };
+  const download = new Download(torrent);
 
   it("adds all the pieces of the file to a new queue", () => {
     const numberPieces = Math.ceil(torrent.info.length / torrent.info["piece length"]);
-    expect(download(torrent).length).toEqual(numberPieces);
+    expect(download.queue._queue.length).toEqual(numberPieces);
   });
 
   // const Helpers = {

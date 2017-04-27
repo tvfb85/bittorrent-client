@@ -3,16 +3,18 @@
 const Pieces = require('./Pieces.js')
 const Queue = require('./Queue.js')
 
-module.exports = (torrent) => {
-  const pieces = new Pieces(torrent);
-  const queue = new Queue(torrent);
-  return addAllPiecesToQueue(torrent, queue);
-};
-
-function addAllPiecesToQueue (torrent, queue) {
-  const numberPieces = Math.ceil(torrent.info.length / torrent.info["piece length"]);
-  for(let i = 0; i < numberPieces; i++) {
-    queue.addToQueue(i);
+module.exports = class {
+  constructor(torrent) {
+    this.torrent = torrent;
+    this.pieces = new Pieces(torrent);
+    this.queue = new Queue(torrent);
+    this.addAllPiecesToQueue(torrent);
   }
-  return queue._queue;
+
+  addAllPiecesToQueue () {
+    const numberPieces = Math.ceil(this.torrent.info.length / this.torrent.info["piece length"]);
+    for(let i = 0; i < numberPieces; i++) {
+      this.queue.addToQueue(i);
+    }
+  }
 }
