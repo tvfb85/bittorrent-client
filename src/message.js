@@ -7,19 +7,21 @@ const crypto = require('crypto');
 
 
 module.exports.buildHandshake = (torrent) => {
-  const buf = Buffer.alloc(68);
-  // pstrlen
-  buf.writeUInt8(19, 0);
-  // pstr
-  buf.write('BitTorrent protocol', 1);
-  // reserved
-  buf.writeUInt32BE(0, 20);
-  buf.writeUInt32BE(0, 24);
-  // reserve for info hash
-  infoHash(torrent).copy(buf, 28);
-  // reserve for peer id
-  createPeerId().copy(buf, 48);
-  return buf;
+  const buffer = Buffer.alloc(68);
+  buffer.writeUInt8(19, 0); // pstrlen
+  buffer.write('BitTorrent protocol', 1);   // pstr
+  buffer.writeUInt32BE(0, 20);   // reserved
+  buffer.writeUInt32BE(0, 24);
+  infoHash(torrent).copy(buffer, 28);
+  createPeerId().copy(buffer, 48);
+  return buffer;
+};
+
+module.exports.buildInterested = () => {
+  const buffer = Buffer.alloc(5);
+  buffer.writeUInt32BE(1, 0);
+  buffer.writeUInt8(2, 4);
+  return buffer;
 };
 
 function infoHash(torrent) {
