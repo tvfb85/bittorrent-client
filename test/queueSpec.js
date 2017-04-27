@@ -44,7 +44,6 @@ describe('Queue', () => {
   });
 
   it('removes the first piece from the queue', () => {
-    console.log(queue._queue)
     queue.addToQueue(pieceIndex);
     queue.removeFromQueue();
     expect(queue._queue.length).toEqual(0);

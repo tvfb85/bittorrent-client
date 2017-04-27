@@ -18,14 +18,6 @@ describe("Download", () => {
     expect(download(torrent).length).toEqual(numberPieces);
   });
 
-  // const Helpers = {
-  //   Pieces: Pieces
-  // }
-  //
-  // it('creates a new Pieces object', () => {
-  //   let piecesSpy = spyOn(Helpers, "Pieces");
-  //   download(dummyTorrent);
-  //   expect(piecesSpy).toHaveBeenCalled();
-  // });
+
 
 });
