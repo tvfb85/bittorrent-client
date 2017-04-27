@@ -8,7 +8,9 @@ module.exports = class {
 
   addToQueue(pieceIndex) {
     const piece = {
-      index: pieceIndex
+      index: pieceIndex,
+      begin: 0,
+      pieceLength: this._torrent.info['piece length']
     }
     this._queue.push(piece);
   }
