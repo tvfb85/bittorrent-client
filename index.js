@@ -1,8 +1,7 @@
-// pseudocode:
+'use strict';
 
-// require torrentParser
-// require pieces
-//
-// torrent = torrentParser.parse ( torrent )
-//
-// new Pieces ( torrent )
+const torrentParser = require('./src/torrentParser');
+const download = require ('./src/download')
+const torrent = torrentParser.open(process.argv[2]);
+
+download(torrent);
