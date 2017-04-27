@@ -3,7 +3,7 @@
 module.exports = class {
   constructor(torrent) {
     function buildPiecesArray() {
-      const numberOfPieces = torrent.info.pieces.length / 20;
+      const numberOfPieces = Math.ceil(torrent.info.pieces.length / 20);
       return new Array(numberOfPieces).fill(false);
       // TO DO: calculate blocks per piece
     }
