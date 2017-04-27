@@ -78,9 +78,9 @@ describe('message', () => {
 
     const payload = {
       index: 1,
-      begin: 0,
+      begin: 4,
       length: 128
-    }
+    };
 
     const testRequestMessage = message.buildRequest(payload);
 
@@ -90,12 +90,22 @@ describe('message', () => {
 
     it('has an id of 6', () => {
       expect(testRequestMessage.slice(4, 5).readUInt8()).toEqual(6);
-    })
+    });
 
     it('writes piece index to the message', () => {
-      const slicedBuffer = testRequestMessage.slice(5, 9)
-      expect(slicedBuffer.readUInt32BE()).toEqual(payload.index)
-    })
-  })
+      const slicedBuffer = testRequestMessage.slice(5, 9);
+      expect(slicedBuffer.readUInt32BE()).toEqual(payload.index);
+    });
+
+    it('writes byte offset within piece to the message', () => {
+      const slicedBuffer = testRequestMessage.slice(9, 13);
+      expect(slicedBuffer.readUInt32BE()).toEqual(payload.begin);
+    });
+
+    it('writes requested length of block to the message', () => {
+      const slicedBuffer = testRequestMessage.slice(13, 17);
+      expect(slicedBuffer.readUInt32BE()).toEqual(payload.length);
+    });
+  });
 
 });

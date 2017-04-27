@@ -29,6 +29,8 @@ module.exports.buildRequest = (payload) => {
   buffer.writeUInt32BE(13, 0);
   buffer.writeUInt8(6, 4);
   buffer.writeUInt32BE(payload.index, 5);
+  buffer.writeUInt32BE(payload.begin, 9);
+  buffer.writeUInt32BE(payload.length, 13);
   return buffer;
 }
 
