@@ -1,8 +1,6 @@
 'use strict';
 
 const Queue = require('../src/Queue');
-const bencode = require('bencode');
-
 
 describe('Queue', () => {
 

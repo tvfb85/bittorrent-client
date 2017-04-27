@@ -7,11 +7,11 @@ module.exports = class {
   }
 
   addToQueue(pieceIndex) {
-    const piece = {
+    const piece = {   // TO DO: make this blocks per piece
       index: pieceIndex,
       begin: 0,
       pieceLength: this._torrent.info['piece length']
-    }
+    };
     this._queue.push(piece);
   }
 
@@ -19,4 +19,4 @@ module.exports = class {
     return this._queue.shift();
   }
 
-}
+};
