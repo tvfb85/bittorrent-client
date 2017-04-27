@@ -68,10 +68,10 @@ describe('message', () => {
     });
 
     it('has an id of 2', () => {
-      const slicedBuffer = testInterestedMessage.slice(4, 5)
+      const slicedBuffer = testInterestedMessage.slice(4, 5);
       expect(slicedBuffer.readUInt8()).toEqual(2);
     });
 
   });
 
-})
+});
