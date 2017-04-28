@@ -134,6 +134,10 @@ describe("connector functions", () => {
     beforeEach(()=>{
       fakeLength = 1;
     });
+    let dummySocket = {
+      write: ()=>{},
+      end: ()=>{}
+    };
 
     it("checks the queue is not empty", ()=>{
       const lengthSpy = spyOn(queue, 'length');
@@ -157,15 +161,21 @@ describe("connector functions", () => {
     it("ask for a piece from the peer if we need the piece", ()=>{
       dummySocket['write'] = () => {};
       const pieceSpy = spyOn(pieces, 'addRequested');
+      const socketSpy = spyOn(dummySocket, 'write');
+      const requestSpy = spyOn(message, 'buildRequest');
       connect.connectors.requestPiece(dummySocket, pieces, queue)
       expect(pieceSpy).toHaveBeenCalledWith(pieceMock);
+      expect(requestSpy).toHaveBeenCalled();
+      expect(socketSpy).toHaveBeenCalled();
     });
 
     it("does not ask for a piece from the peer if we do not need the piece", ()=>{
       needed = false;
       const pieceSpy = spyOn(pieces, 'addRequested');
+      const socketSpy = spyOn(dummySocket, 'write');
       connect.connectors.requestPiece(dummySocket, pieces, queue)
       expect(pieceSpy).not.toHaveBeenCalled();
+      expect(socketSpy).not.toHaveBeenCalled();
     });
 
   });

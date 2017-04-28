@@ -42,13 +42,12 @@ function requestPiece(socket, pieces, queue) {
   while (queue.length()) {
     let piece = queue.removeFromQueue();
     if (pieces.needed(piece)) {
-      socket.write(message.buildRequest(piece))
+      socket.write(message.buildRequest(piece));
       pieces.addRequested(piece);
       break;
     }
   }
 };
-
 
 function handle(msg, socket, file, pieces, queue, torrent) {
   if (messageParser.isHandshake(msg)) {

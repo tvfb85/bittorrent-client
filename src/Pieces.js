@@ -8,17 +8,27 @@ module.exports = class {
       // TO DO: calculate blocks per piece
     }
     this._requested = buildPiecesArray();
+    this._received = buildPiecesArray();
   };
+
   isComplete() {
-
+    return this._received.every(piece=>piece);
   };
+
   needed(piece) {
-    return true;
+    if (this._requested.every(p=>p)) {
+      this._requested = this._received;
+      // might need to map the pieces across one by one instead
+    };
+    return !this._requested[piece.index]
   };
 
-  addRequested(piece) {
-    const index = piece.index;
-    this._requested[index] = true;
-  }
+  addRequested(piece){
+    this._requested[piece.index] = piece;
+  };
+
+  addReceived(piece){
+    this._received[piece.index] = piece;
+  };
 
 };
