@@ -14,6 +14,7 @@ describe("messageHandler", () => {
   let dummySocket;
   let testHandshake;
   let torrent;
+  let interestedMessage;
 
   beforeEach(() => {
     torrent = {
@@ -34,10 +35,10 @@ describe("messageHandler", () => {
 
   it("sends an interested message if it receives a handshake", () => {
     spyOn(dummySocket, "write");
+    const interestedMessage = spyOn(message, "buildInterested").andCallThrough();
     messageHandler.handle(testHandshake, dummySocket);
+    expect(interestedMessage).toHaveBeenCalled();
     expect(dummySocket.write).toHaveBeenCalled();
   });
-
-
 
 });
