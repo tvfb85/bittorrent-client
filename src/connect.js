@@ -33,7 +33,7 @@ function getExpectedMessageLength(message, handshake) {
 }
 
 function isWholeMessage(data, expectedLength) {
-  return data.length >= 4 && data.length >= expectedLength();
+  return data.length >= 4 && data.length >= expectedLength;
 }
 
 module.exports.requestPiece = (socket, pieces, queue) => {
