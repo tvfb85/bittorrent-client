@@ -12,4 +12,13 @@ module.exports = class {
   isComplete() {
 
   };
+  needed(piece) {
+    return true;
+  };
+
+  addRequested(piece) {
+    const index = piece.index;
+    this._requested[index] = true;
+  }
+
 };

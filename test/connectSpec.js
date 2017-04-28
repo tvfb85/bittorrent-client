@@ -148,12 +148,14 @@ describe("connector functions", () => {
     });
 
     it("removes a piece from the download queue", ()=>{
+      dummySocket['write'] = () => {};
       const removeFromQueueSpy = spyOn(queue, 'removeFromQueue').andCallThrough();
       connect.connectors.requestPiece(dummySocket, pieces, queue)
       expect(removeFromQueueSpy).toHaveBeenCalled();
     });
 
     it("ask for a piece from the peer if we need the piece", ()=>{
+      dummySocket['write'] = () => {};
       const pieceSpy = spyOn(pieces, 'addRequested');
       connect.connectors.requestPiece(dummySocket, pieces, queue)
       expect(pieceSpy).toHaveBeenCalledWith(pieceMock);

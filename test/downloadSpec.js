@@ -13,7 +13,7 @@ describe("Download", () => {
       pieces: '<Buffer >'
     }
   };
-  const download = new Download(torrent);
+  const download = new Download(torrent, torrent.info.name);
 
   it("adds all the pieces of the file to a new queue", () => {
     const numberPieces = Math.ceil(torrent.info.length / torrent.info["piece length"]);
@@ -23,4 +23,3 @@ describe("Download", () => {
 
 
 });
-

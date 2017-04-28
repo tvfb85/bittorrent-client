@@ -20,7 +20,6 @@ function dataHandler(socket, callback) {
   socket.on('data', data => {
     let msgLen = () => { return getExpectedMessageLength(newBuffer, handshake); };
     newBuffer = Buffer.concat([newBuffer, data]);
-
     while (isWholeMessage(newBuffer, msgLen)) {
       callback(newBuffer.slice(0, msgLen()));
       newBuffer = newBuffer.slice(msgLen());
@@ -43,11 +42,13 @@ function requestPiece(socket, pieces, queue) {
   while (queue.length()) {
     let piece = queue.removeFromQueue();
     if (pieces.needed(piece)) {
+      socket.write(message.buildRequest(piece))
       pieces.addRequested(piece);
       break;
     }
   }
 };
+
 
 function handle(msg, socket, file, pieces, queue, torrent) {
   if (messageParser.isHandshake(msg)) {
@@ -55,7 +56,8 @@ function handle(msg, socket, file, pieces, queue, torrent) {
   } else {
     const parsedMsg = messageParser.parse(msg);
     if (parsedMsg.id === 1) {this.unchokeHandler(socket, pieces, queue)}
-    if (parsedMsg.id === 7) {this.pieceHandler(file, parsedMsg.payload, torrent, socket, pieces, queue)}
+    if (parsedMsg.id === 7) {
+      this.pieceHandler(file, parsedMsg.payload, torrent, socket, pieces, queue)}
   }
 };
 
