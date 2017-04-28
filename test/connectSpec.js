@@ -80,12 +80,6 @@ describe("connector functions", () => {
   });
 
   describe("dataHandler helpers", () => {
-    it('calls the callback eventually', () => {
-      let theCallback = jasmine.createSpy('callback');
-      // let theData = Buffer.from('data');
-      connect.connectors.dataHandler(dummySocket, theCallback);
-      expect(theCallback).toHaveBeenCalled();
-    });
 
     it('gets expected message length for handshake', () => {
       let msg = message.buildHandshake(torrent);
