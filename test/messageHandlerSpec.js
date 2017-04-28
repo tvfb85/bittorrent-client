@@ -7,6 +7,7 @@ const messageParser = require('../src/messageParser');
 const Buffer = require('buffer').Buffer;
 const bencode = require('bencode');
 const crypto = require('crypto');
+const connect = require('../src/connect')
 
 
 describe("messageHandler", () => {
@@ -63,5 +64,12 @@ describe("messageHandler", () => {
     messageHandler.handle(msg, dummySocket);
     expect(pieceSpy).toHaveBeenCalledWith(dummySocket, msg);
   });
+
+  it('calls requestPiece when called', () => {
+    const download = 'download';
+    const connectSpy = spyOn(connect, "requestPiece");
+    messageHandler.unchokeHandler(download);
+    expect(connectSpy).toHaveBeenCalledWith(download);
+  })
 
 });

@@ -2,6 +2,7 @@
 
 const messageParser = require('./messageParser');
 const message = require('./message');
+const connect = require('./connect');
 
 module.exports.handle = (msg, socket) => {
   if (messageParser.isHandshake(msg)) {
@@ -13,10 +14,10 @@ module.exports.handle = (msg, socket) => {
   }
 };
 
-module.exports.unchokeHandler = () => {
-
+module.exports.unchokeHandler = (download) => {
+  connect.requestPiece(download);
 };
 
 module.exports.pieceHandler = () => {
-  
+
 };
