@@ -1,7 +1,10 @@
 'use strict';
 
-const Pieces = require('./Pieces.js')
-const Queue = require('./Queue.js')
+const Pieces = require('./Pieces.js');
+const Queue = require('./Queue.js');
+const connect = require('./connect.js');
+const peer = require('./peer.js');
+
 
 module.exports = class {
   constructor(torrent) {
@@ -17,5 +20,8 @@ module.exports = class {
       this.queue.addToQueue(i);
     }
   }
-}
 
+  start () {
+    connect(peer, this.torrent);
+  }
+};

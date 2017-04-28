@@ -50,7 +50,7 @@ describe("Connect", () => {
 
     spyOn(dummySocket, "write");
 
-    connect(peer, dummySocket);
+    connect(peer, torrent, dummySocket);
     expect(dummySocket.write).toHaveBeenCalled();
   });
 
@@ -59,7 +59,7 @@ describe("Connect", () => {
 
     spyOn(dummySocket, "on").andCallThrough();
 
-    connect(peer, dummySocket);
+    connect(peer, torrent, dummySocket);
     expect(dummySocket.on).toHaveBeenCalledWith('data', jasmine.any(Function));
   });
 
@@ -78,11 +78,41 @@ describe("Connect", () => {
     //   expect(Buffer.concat).toHaveBeenCalledWith([jasmine.any(Object(Buffer)), bufferData]);
     // });
 
-    it('get expected message length for handshake', () => {
+    it('gets expected message length for handshake', () => {
       let msg = message.buildHandshake(torrent);
       let handshake = true;
       expect(connect.getExpectedMessageLength(msg, handshake)).toEqual(68)
-    })
+    });
+
+    it('gets expected message length for an interested message', () => {
+      let msg = message.buildInterested(torrent);
+      let handshake = false;
+      expect(connect.getExpectedMessageLength(msg, handshake)).toEqual(5)
+    });
+
+    it('gets expected message length for an request message', () => {
+      let payload = {
+        index: 1,
+        begin: 4,
+        length: 128
+      };
+      let msg = message.buildRequest(payload);
+      let handshake = false;
+      expect(connect.getExpectedMessageLength(msg, handshake)).toEqual(17)
+    });
+
+    it('knows when a received message is complete', () => {
+      let completeMsg = message.buildHandshake(torrent);
+      let expectedLength = () => { return 68; };
+      expect(connect.isWholeMessage(completeMsg, expectedLength)).toEqual(true)
+    });
+
+    it('knows when a received message is incomplete', () => {
+      let completeMsg = message.buildHandshake(torrent);
+      let incompleteMsg = completeMsg.slice(60, 68);
+      let expectedLength = () => { return 68; };
+      expect(connect.isWholeMessage(incompleteMsg, expectedLength)).toEqual(false)
+    });
 
   });
 
