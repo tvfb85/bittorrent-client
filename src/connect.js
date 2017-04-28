@@ -5,7 +5,7 @@ const net = require('net');
 const messageParser = require('./messageParser');
 const message = require('./message');
 
-module.exports = (peer, torrent, pieces, queue, socket = new net.Socket()) => {
+module.exports = (peer, torrent, pieces, queue, file, socket = new net.Socket()) => {
   socket.on('error', console.log);
   socket.connect(peer.port, peer.ip, () => {
     socket.write(message.buildHandshake(torrent));
