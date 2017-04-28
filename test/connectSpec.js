@@ -1,6 +1,7 @@
 'use strict';
 const net = require('net');
 const connect = require('../src/connect');
+const message = require('../src/message');
 const messageParser = require('../src/messageParser');
 const Buffer = require('buffer').Buffer;
 
@@ -54,30 +55,34 @@ describe("Connect", () => {
   });
 
   it('should listen for data', () => {
-    dummySocket['on'] = () => {
-      return true;
-    };
+    dummySocket['on'] = () => {};
 
-    spyOn(dummySocket, "on");
+    spyOn(dummySocket, "on").andCallThrough();
 
     connect(peer, dummySocket);
-    expect(dummySocket.on).toHaveBeenCalledWith('data', console.log);
+    expect(dummySocket.on).toHaveBeenCalledWith('data', jasmine.any(Function));
   });
 
-  describe("dataHandler", () => {
-    it('calls the callback eventually', () => {
-      let theCallback = jasmine.createSpy(()=>{});
-      let theData = Buffer.from('data');
-      connect.dataHandler(theData, theCallback);
-      expect(theCallback).toHaveBeenCalledWith(theData);
-    });
+  describe("dataHandler helpers", () => {
+    // it('calls the callback eventually', () => {
+    //   let theCallback = jasmine.createSpy(()=>{});
+    //   // let theData = Buffer.from('data');
+    //   connect.dataHandler(dummySocket, theCallback);
+    //   expect(theCallback).toHaveBeenCalled();
+    // });
+    //
+    // it('puts the data in a Buffer', ()=>{
+    //   let theCallback = jasmine.createSpy(()=>{});
+    //   spyOn(Buffer, 'concat');
+    //   connect.dataHandler(bufferData, theCallback)
+    //   expect(Buffer.concat).toHaveBeenCalledWith([jasmine.any(Object(Buffer)), bufferData]);
+    // });
 
-    it('puts the data in a Buffer', ()=>{
-      let theCallback = jasmine.createSpy(()=>{});
-      spyOn(Buffer, 'concat');
-      connect.dataHandler(bufferData, theCallback)
-      expect(Buffer.concat).toHaveBeenCalledWith([jasmine.any(Object(Buffer)), bufferData]);
-    });
+    it('get expected message length for handshake', () => {
+      let msg = message.buildHandshake(torrent);
+      let handshake = true;
+      expect(connect.getExpectedMessageLength(msg, handshake)).toEqual(68)
+    })
 
   });
 
