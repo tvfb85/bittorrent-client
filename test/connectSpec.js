@@ -50,7 +50,7 @@ describe("Connect", () => {
 
     spyOn(dummySocket, "write");
 
-    connect(peer, dummySocket);
+    connect(peer, torrent, dummySocket);
     expect(dummySocket.write).toHaveBeenCalled();
   });
 
@@ -59,7 +59,7 @@ describe("Connect", () => {
 
     spyOn(dummySocket, "on").andCallThrough();
 
-    connect(peer, dummySocket);
+    connect(peer, torrent, dummySocket);
     expect(dummySocket.on).toHaveBeenCalledWith('data', jasmine.any(Function));
   });
 
@@ -103,14 +103,14 @@ describe("Connect", () => {
 
     it('knows when a received message is complete', () => {
       let completeMsg = message.buildHandshake(torrent);
-      let expectedLength = 68;
+      let expectedLength = () => { return 68; };
       expect(connect.isWholeMessage(completeMsg, expectedLength)).toEqual(true)
     });
 
     it('knows when a received message is incomplete', () => {
       let completeMsg = message.buildHandshake(torrent);
       let incompleteMsg = completeMsg.slice(60, 68);
-      let expectedLength = 68;
+      let expectedLength = () => { return 68; };
       expect(connect.isWholeMessage(incompleteMsg, expectedLength)).toEqual(false)
     });
 
