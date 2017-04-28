@@ -19,4 +19,8 @@ module.exports = class {
     return this._queue.shift();
   }
 
+  length() {
+    return this._queue.length;
+  }
+
 };

@@ -45,8 +45,15 @@ describe('Queue', () => {
 
   it('removes the first piece from the queue', () => {
     queue.addToQueue(pieceIndex);
+    expect(queue._queue.length).toEqual(1);
     queue.removeFromQueue();
     expect(queue._queue.length).toEqual(0);
   })
+
+  describe('length', ()=>{
+    it('knows the length of the queue', ()=>{
+      expect(queue.length()).toEqual(0)
+    });
+  });
 
 });
