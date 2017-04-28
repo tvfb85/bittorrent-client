@@ -16,6 +16,8 @@ describe("messageHandler", () => {
   let testHandshake;
   let torrent;
   let interestedMessage;
+  let dummyQueue;
+  let dummyPieces;
 
   beforeEach(() => {
     torrent = {
@@ -32,6 +34,8 @@ describe("messageHandler", () => {
     dummySocket = {
       write: function() {}
     };
+    dummyPieces = "dummyPieces";
+    dummyQueue = "dummyQueue";
   });
 
   it("sends an interested message if it receives a handshake", () => {
@@ -44,7 +48,7 @@ describe("messageHandler", () => {
 
   it("parses any non-handshake message", () => {
     const msg = "hello";
-    const parseSpy = spyOn(messageParser, "parse").andReturn({id: 2});
+    const parseSpy = spyOn(messageParser, "parse").andReturn({id: 678});
     messageHandler.handle(msg, dummySocket);
     expect(parseSpy).toHaveBeenCalledWith(msg);
   });
@@ -53,8 +57,8 @@ describe("messageHandler", () => {
     const msg = "hello";
     const parseSpy = spyOn(messageParser, "parse").andReturn({id: 2});
     const unchokeSpy = spyOn(messageHandler, 'unchokeHandler');
-    messageHandler.handle(msg, dummySocket);
-    expect(unchokeSpy).toHaveBeenCalledWith(dummySocket);
+    messageHandler.handle(msg, dummySocket, dummyPieces, dummyQueue);
+    expect(unchokeSpy).toHaveBeenCalledWith(dummySocket, dummyPieces, dummyQueue);
   });
 
   it("calls pieceHandler when we get a piece Message", ()=>{
@@ -66,10 +70,9 @@ describe("messageHandler", () => {
   });
 
   it('calls requestPiece when called', () => {
-    const download = 'download';
     const connectSpy = spyOn(connect, "requestPiece");
-    messageHandler.unchokeHandler(download);
-    expect(connectSpy).toHaveBeenCalledWith(download);
+    messageHandler.unchokeHandler(dummySocket, dummyPieces, dummyQueue);
+    expect(connectSpy).toHaveBeenCalledWith(dummySocket, dummyPieces, dummyQueue);
   })
 
 });
