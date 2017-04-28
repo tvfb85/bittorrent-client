@@ -8,5 +8,8 @@ module.exports = class {
       // TO DO: calculate blocks per piece
     }
     this._requested = buildPiecesArray();
-  }
+  };
+  isComplete() {
+
+  };
 };
