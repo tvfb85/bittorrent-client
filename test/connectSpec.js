@@ -66,7 +66,7 @@ describe("connector functions", () => {
 
     spyOn(dummySocket, "write");
 
-    connect(peer, torrent, dummySocket);
+    connect(peer, torrent, dummyQueue, dummySocket);
     expect(dummySocket.write).toHaveBeenCalled();
   });
 
@@ -75,7 +75,7 @@ describe("connector functions", () => {
 
     spyOn(dummySocket, "on").andCallThrough();
 
-    connect(peer, torrent, dummySocket);
+    connect(peer, torrent, dummyQueue, dummySocket);
     expect(dummySocket.on).toHaveBeenCalledWith('data', jasmine.any(Function));
   });
 
