@@ -7,7 +7,8 @@ const messageParser = require('../src/messageParser');
 const Buffer = require('buffer').Buffer;
 const bencode = require('bencode');
 const crypto = require('crypto');
-const connect = require('../src/connect')
+const connect = require('../src/connect');
+const fs = require('fs');
 
 
 describe("messageHandler", () => {
@@ -18,16 +19,15 @@ describe("messageHandler", () => {
   let interestedMessage;
   let dummyQueue;
   let dummyPieces;
+  let dummyPieceResp;
 
   beforeEach(() => {
     torrent = {
       info: {
-        Dict: {
-          length: 1277987,
-          name: '<Buffer 66 6c 61 67 2e 6a 70 67>',
-          'piece length': 16384,
-          pieces: '<Buffer >'
-        }
+        length: 1277987,
+        name: '<Buffer 66 6c 61 67 2e 6a 70 67>',
+        'piece length': 16384,
+        pieces: '<Buffer >'
       }
     };
     testHandshake = message.buildHandshake(torrent);
@@ -36,6 +36,13 @@ describe("messageHandler", () => {
     };
     dummyPieces = "dummyPieces";
     dummyQueue = "dummyQueue";
+    dummyPieceResp = {
+      index: 1,
+      begin: 0,
+      block:  {
+        length: 10
+      }
+    }
   });
 
   it("sends an interested message if it receives a handshake", () => {
@@ -57,7 +64,7 @@ describe("messageHandler", () => {
     const msg = "hello";
     const parseSpy = spyOn(messageParser, "parse").andReturn({id: 2});
     const unchokeSpy = spyOn(messageHandler, 'unchokeHandler');
-    messageHandler.handle(msg, dummySocket, dummyPieces, dummyQueue);
+    messageHandler.handle(msg, dummySocket, 'filePath', dummyPieces, dummyQueue);
     expect(unchokeSpy).toHaveBeenCalledWith(dummySocket, dummyPieces, dummyQueue);
   });
 
@@ -65,14 +72,20 @@ describe("messageHandler", () => {
     const msg = "hello";
     const parseSpy = spyOn(messageParser, "parse").andReturn({id: 7, payload: msg});
     const pieceSpy = spyOn(messageHandler, 'pieceHandler');
-    messageHandler.handle(msg, dummySocket);
-    expect(pieceSpy).toHaveBeenCalledWith(dummySocket, msg);
+    messageHandler.handle(msg, dummySocket, 'filePath', dummyPieces, dummyQueue, torrent);
+    expect(pieceSpy).toHaveBeenCalledWith('filePath', msg, torrent);
   });
 
   it('calls requestPiece when called', () => {
     const connectSpy = spyOn(connect, "requestPiece");
     messageHandler.unchokeHandler(dummySocket, dummyPieces, dummyQueue);
     expect(connectSpy).toHaveBeenCalledWith(dummySocket, dummyPieces, dummyQueue);
-  })
+  });
+
+  it('writes a block from a payload to the file', () => {
+    const fileSpy = spyOn(fs, "write");
+    messageHandler.pieceHandler('filePath', dummyPieceResp, torrent);
+    expect(fileSpy).toHaveBeenCalledWith('filePath', dummyPieceResp.block, 0, dummyPieceResp.block.length, 16384, jasmine.any(Function));
+  });
 
 });
