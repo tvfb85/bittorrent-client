@@ -6,11 +6,14 @@ const connect = require('./connect');
 const fs = require('fs');
 
 module.exports.handle = (msg, socket, file, pieces, queue, torrent) => {
+  console.log('1');
   if (messageParser.isHandshake(msg)) {
+    console.log('3 - handshake')
     socket.write(message.buildInterested());
   } else {
+    console.log('5')
     const parsedMsg = messageParser.parse(msg);
-    if (parsedMsg.id === 2) {this.unchokeHandler(socket, pieces, queue)}
+    if (parsedMsg.id === 1) {this.unchokeHandler(socket, pieces, queue)}
     if (parsedMsg.id === 7) {this.pieceHandler(file, parsedMsg.payload, torrent)}
   }
 };

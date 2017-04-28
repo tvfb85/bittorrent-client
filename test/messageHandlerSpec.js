@@ -62,7 +62,7 @@ describe("messageHandler", () => {
 
   it("calls unchokeHandler when we get a unchoke Message", ()=>{
     const msg = "hello";
-    const parseSpy = spyOn(messageParser, "parse").andReturn({id: 2});
+    const parseSpy = spyOn(messageParser, "parse").andReturn({id: 1});
     const unchokeSpy = spyOn(messageHandler, 'unchokeHandler');
     messageHandler.handle(msg, dummySocket, 'filePath', dummyPieces, dummyQueue);
     expect(unchokeSpy).toHaveBeenCalledWith(dummySocket, dummyPieces, dummyQueue);

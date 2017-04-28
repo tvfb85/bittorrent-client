@@ -1,6 +1,7 @@
 'use strict';
 const net = require('net');
 const messageParser = require('./messageParser');
+const messageHandler = require('./messageHandler');
 const message = require('./message');
 
 module.exports = (peer, torrent, socket = new net.Socket()) => {
@@ -8,7 +9,7 @@ module.exports = (peer, torrent, socket = new net.Socket()) => {
   socket.connect(peer.port, peer.ip, () => {
     socket.write(message.buildHandshake(torrent));
   });
-  dataHandler(socket, wholeMsg => messageHandler(wholeMsg, socket))
+  dataHandler(socket, wholeMsg => messageHandler.handle(wholeMsg, socket))
 };
 
 function dataHandler(socket, callback) {
@@ -20,6 +21,7 @@ function dataHandler(socket, callback) {
     newBuffer = Buffer.concat([newBuffer, data]);
 
     while (isWholeMessage(newBuffer, msgLen)) {
+      console.log(newBuffer.slice(0, msgLen()).length);
       callback(newBuffer.slice(0, msgLen()));
       newBuffer = newBuffer.slice(msgLen());
       handshake = false;

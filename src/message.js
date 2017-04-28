@@ -18,6 +18,7 @@ module.exports.buildHandshake = (torrent) => {
 };
 
 module.exports.buildInterested = () => {
+  console.log('4');
   const buffer = Buffer.alloc(5);
   buffer.writeUInt32BE(1, 0);
   buffer.writeUInt8(2, 4);
