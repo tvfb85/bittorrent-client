@@ -79,7 +79,7 @@ describe('message', () => {
     const payload = {
       index: 1,
       begin: 4,
-      length: 128
+      pieceLength: 128
     };
 
     const testRequestMessage = message.buildRequest(payload);
@@ -104,7 +104,7 @@ describe('message', () => {
 
     it('writes requested length of block to the message', () => {
       const slicedBuffer = testRequestMessage.slice(13, 17);
-      expect(slicedBuffer.readUInt32BE()).toEqual(payload.length);
+      expect(slicedBuffer.readUInt32BE()).toEqual(payload.pieceLength);
     });
   });
 

@@ -15,13 +15,6 @@ module.exports = class {
     return this._received.every(piece=>piece);
   };
 
-// piece = {   // TO DO: make this blocks per piece
-//   index: pieceIndex,
-//   begin: 0,
-//   pieceLength: this._torrent.info['piece length']
-// };
-
-
   needed(piece) {
     if (this._requested.every(p=>p)) {
       this._requested = this._received;
