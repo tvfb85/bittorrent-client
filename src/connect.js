@@ -5,12 +5,12 @@ const net = require('net');
 const messageParser = require('./messageParser');
 const message = require('./message');
 
-module.exports = (peer, torrent, queue, socket = new net.Socket()) => {
+module.exports = (peer, torrent, pieces, queue, socket = new net.Socket()) => {
   socket.on('error', console.log);
   socket.connect(peer.port, peer.ip, () => {
     socket.write(message.buildHandshake(torrent));
   });
-  dataHandler(socket, wholeMsg => module.exports.handlers.handle(wholeMsg, socket, queue))
+  dataHandler(socket, wholeMsg => module.exports.handlers.handle(wholeMsg, socket, file, pieces, queue, torrent))
 };
 
 function dataHandler(socket, callback) {
