@@ -41,4 +41,27 @@ describe("messageHandler", () => {
     expect(dummySocket.write).toHaveBeenCalled();
   });
 
+  it("parses any non-handshake message", () => {
+    const msg = "hello";
+    const parseSpy = spyOn(messageParser, "parse").andReturn({id: 2});
+    messageHandler.handle(msg, dummySocket);
+    expect(parseSpy).toHaveBeenCalledWith(msg);
+  });
+
+  it("calls unchokeHandler when we get a unchoke Message", ()=>{
+    const msg = "hello";
+    const parseSpy = spyOn(messageParser, "parse").andReturn({id: 2});
+    const unchokeSpy = spyOn(messageHandler, 'unchokeHandler');
+    messageHandler.handle(msg, dummySocket);
+    expect(unchokeSpy).toHaveBeenCalledWith(dummySocket);
+  });
+
+  it("calls pieceHandler when we get a piece Message", ()=>{
+    const msg = "hello";
+    const parseSpy = spyOn(messageParser, "parse").andReturn({id: 7, payload: msg});
+    const pieceSpy = spyOn(messageHandler, 'pieceHandler');
+    messageHandler.handle(msg, dummySocket);
+    expect(pieceSpy).toHaveBeenCalledWith(dummySocket, msg);
+  });
+
 });
