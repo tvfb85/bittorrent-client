@@ -8,7 +8,7 @@ module.exports.isHandshake = (message) => {
 module.exports.parse = (message) => {
   const msgId = message.readInt8(4);
   let payload = null;
-  if (message.length > 5) {
+  if (message.length > 5 && msgId != 4 && msgId != 5) {
     payload = {
       index: message.readInt32BE(5),
       begin: message.readInt32BE(9)
