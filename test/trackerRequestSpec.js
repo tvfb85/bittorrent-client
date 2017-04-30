@@ -100,6 +100,18 @@ describe('Tracker requests', () => {
       expect(announceRequest.readUInt32BE(76)).toEqual(0);
     });
 
+    it("doesn't specify an event", () => {
+        expect(announceRequest.readUInt32BE(80)).toEqual(0);
+    });
+
+    it("doesn't specify an IP address", () => {
+        expect(announceRequest.readUInt32BE(84)).toEqual(0);
+    });
+
+    it("saves random bytes as a key", () => {
+      expect(announceRequest.readUInt32BE(88)).not.toEqual(0);
+    })
+
   });
 
 

@@ -25,8 +25,11 @@ module.exports.buildAnnounceRequest = (connectionId, torrent) => {
   torrentParser.infoHash(torrent).copy(buffer, 16);
   message.createPeerId().copy(buffer, 36);
   // leave 8 bytes as 0 to indicate amount downloaded
-  torrentParser.size(torrent).copy(buffer, 64); 
+  torrentParser.size(torrent).copy(buffer, 64);
   // leave 8 bytes as 0 to indicate amount uploaded
+  // leave 4 bytes as 0 to indicate unspecified event
+  // leave 4 bytes as 0 to indicate unspecified IP address
+  crypto.randomBytes(4).copy(buffer, 88);
 
   return buffer;
 };
