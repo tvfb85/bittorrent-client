@@ -3,7 +3,7 @@
 const Buffer = require('buffer').Buffer;
 const bencode = require('bencode');
 const crypto = require('crypto');
-
+const torrentParser = require('./torrentParser');
 
 
 module.exports.buildHandshake = (torrent) => {
@@ -12,7 +12,7 @@ module.exports.buildHandshake = (torrent) => {
   buffer.write('BitTorrent protocol', 1);   // pstr
   buffer.writeUInt32BE(0, 20);   // reserved
   buffer.writeUInt32BE(0, 24);
-  infoHash(torrent).copy(buffer, 28);
+  torrentParser.infoHash(torrent).copy(buffer, 28);
   createPeerId().copy(buffer, 48);
   return buffer;
 };
@@ -32,11 +32,6 @@ module.exports.buildRequest = (payload) => {
   buffer.writeUInt32BE(payload.begin, 9);
   buffer.writeUInt32BE(payload.pieceLength, 13);
   return buffer;
-}
-
-function infoHash(torrent) {
-  const info = bencode.encode(torrent.info);
-  return crypto.createHash('sha1').update(info).digest();
 }
 
 function createPeerId() {

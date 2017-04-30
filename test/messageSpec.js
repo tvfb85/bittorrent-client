@@ -2,10 +2,6 @@
 
 const message = require('../src/message');
 const Buffer = require('buffer').Buffer;
-const bencode = require('bencode');
-const crypto = require('crypto');
-
-
 
 describe('message', () => {
 
@@ -43,13 +39,6 @@ describe('message', () => {
     it('writes the pstr to the buffer', () => {
       const pstrChunk = testHandshake.slice(1,20);
       expect(pstrChunk.toString('utf8')).toEqual('BitTorrent protocol');
-    });
-
-    it('writes the info hash to the buffer', () => {
-      const info = bencode.encode(torrent.info)
-      const hashedInfo = crypto.createHash('sha1').update(info).digest();
-      const infoHashFromHandshake = testHandshake.slice(28,48);
-      expect(infoHashFromHandshake.toString('utf8')).toEqual(hashedInfo.toString('utf8'));
     });
 
     it('writes the peer ID to the buffer', () => {
