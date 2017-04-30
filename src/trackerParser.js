@@ -7,7 +7,7 @@ module.exports.responseType = (resp) => {
 module.exports.parseConnectionResp = (resp) => {
   return {
     action: resp.readUInt32BE(0),
-    transactionID: resp.slice(4, 8).toString('utf8'),
+    transactionID: resp.readUInt32BE(4),
     connectionID: resp.slice(8, 12).toString('utf8') + resp.slice(12, 16).toString('utf8')
   }
 }

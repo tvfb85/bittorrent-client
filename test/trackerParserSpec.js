@@ -8,7 +8,7 @@ describe('trackerParser', () => {
   const connRespMock = (() => {
     const buffer = Buffer.alloc(16);
     buffer.writeUInt32BE(0, 0); // action
-    buffer.write('1234', 4); // transaction ID
+    buffer.writeUInt32BE(1, 4); // transaction ID
     buffer.write('conn', 8); // connection ID
     buffer.write('ecti', 12); // connection ID (2)
     return buffer;
@@ -70,7 +70,7 @@ describe('trackerParser', () => {
       expect(trackerParser.parseConnectionResp(connRespMock)).toEqual(
         {
           action: 0,
-          transactionID: '1234',
+          transactionID: 1,
           connectionID: 'connecti'
         }
       )
