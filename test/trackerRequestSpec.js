@@ -1,6 +1,8 @@
 'use strict';
 
 const torrentParser = require('../src/torrentParser');
+const message = require('../src/message');
+
 
 describe('Tracker requests', () => {
 
@@ -45,12 +47,10 @@ describe('Tracker requests', () => {
     beforeEach(() => {
       torrent = {
         info: {
-          Dict: {
-            length: 1277987,
-            name: '<Buffer 66 6c 61 67 2e 6a 70 67>',
-            'piece length': 16384,
-            pieces: '<Buffer >'
-          }
+          length: 1277987,
+          name: '<Buffer 66 6c 61 67 2e 6a 70 67>',
+          'piece length': 16384,
+          pieces: '<Buffer >'
         }
       }
       announceRequest = trackerRequest.buildAnnounceRequest(connectionId, torrent);
@@ -73,10 +73,32 @@ describe('Tracker requests', () => {
     });
 
     it("gets infoHash from torrentParser", () => {
-      const torrentSpy = spyOn(torrentParser, "infoHash");
+      const torrentSpy = spyOn(torrentParser, "infoHash").andCallThrough();
       trackerRequest.buildAnnounceRequest(connectionId, torrent);
       expect(torrentSpy).toHaveBeenCalled();
-    })
+    });
+
+    it("gets peerId", () => {
+      const messageSpy = spyOn(message, "createPeerId").andCallThrough();
+      trackerRequest.buildAnnounceRequest(connectionId, torrent);
+      expect(messageSpy).toHaveBeenCalled();
+    });
+
+    it("specifies the amount downloaded as 0", () => {
+      expect(announceRequest.readUInt32BE(56)).toEqual(0);
+      expect(announceRequest.readUInt32BE(60)).toEqual(0);
+    });
+
+    it("gets size from torrentParser", () => {
+      const torrentSpy = spyOn(torrentParser, "size").andCallThrough();
+      trackerRequest.buildAnnounceRequest(connectionId, torrent);
+      expect(torrentSpy).toHaveBeenCalled();
+    });
+
+    it("specifies the amount uploaded as 0", () => {
+      expect(announceRequest.readUInt32BE(72)).toEqual(0);
+      expect(announceRequest.readUInt32BE(76)).toEqual(0);
+    });
 
   });
 

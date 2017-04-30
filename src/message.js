@@ -13,7 +13,7 @@ module.exports.buildHandshake = (torrent) => {
   buffer.writeUInt32BE(0, 20);   // reserved
   buffer.writeUInt32BE(0, 24);
   torrentParser.infoHash(torrent).copy(buffer, 28);
-  createPeerId().copy(buffer, 48);
+  this.createPeerId().copy(buffer, 48);
   return buffer;
 };
 
@@ -34,7 +34,7 @@ module.exports.buildRequest = (payload) => {
   return buffer;
 }
 
-function createPeerId() {
+module.exports.createPeerId = () => {
   let id = null;
 
   if (!id) {
