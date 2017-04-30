@@ -8,9 +8,9 @@ describe('trackerParser', () => {
   const connRespMock = (() => {
     const buffer = Buffer.alloc(16);
     buffer.writeUInt32BE(0, 0); // action
-    buffer.writeUInt32BE(0, 4); // transaction ID
-    buffer.writeUInt32BE(0, 8); // connection ID
-    buffer.writeUInt32BE(0, 12); // connection ID (2)
+    buffer.write('1234', 4); // transaction ID
+    buffer.write('conn', 8); // connection ID
+    buffer.write('ecti', 12); // connection ID (2)
     return buffer;
   })();
 
@@ -53,7 +53,7 @@ describe('trackerParser', () => {
     it('does not respond with "announce" for a connect msg', () => {
       expect(trackerParser.responseType(connRespMock)).not.toEqual('announce');
     });
-    
+
     it('identifies a announce message', () => {
       expect(trackerParser.responseType(announceRespMock)).toEqual('announce');
     });
@@ -63,6 +63,20 @@ describe('trackerParser', () => {
     });
 
   });
+
+  describe('parseConnectionResp', () => {
+
+    it('it is a function', () => {
+      expect(trackerParser.parseConnectionResp(connRespMock)).toEqual(
+        {
+          action: 0,
+          transactionID: '1234',
+          connectionID: 'connecti'
+        }
+      )
+    })
+
+  })
 
   describe('parseAnnounceResp', () => {
 

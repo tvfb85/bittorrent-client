@@ -4,6 +4,14 @@ module.exports.responseType = (resp) => {
   return (resp.readUInt32BE(0) === 0) ? 'connect' : 'announce';
 };
 
+module.exports.parseConnectionResp = (resp) => {
+  return {
+    action: resp.readUInt32BE(0),
+    transactionID: resp.slice(4, 8).toString('utf8'),
+    connectionID: resp.slice(8, 12).toString('utf8') + resp.slice(12, 16).toString('utf8')
+  }
+}
+
 module.exports.parseAnnounceResp = (resp) => {
   function groupPeerAddresses(allPeerData, groupSize = 6) {
     let group = [];
