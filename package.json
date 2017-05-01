@@ -9,10 +9,10 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-
     "jasmine-node": "^1.14.5"
   },
   "dependencies": {
-    "bencode": "^0.12.0"
+    "bencode": "^0.12.0",
+    "bignum": "^0.12.5"
   }
 }

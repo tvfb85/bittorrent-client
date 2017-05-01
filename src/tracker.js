@@ -7,15 +7,15 @@ const urlParse = require('url').parse;
 
 module.exports.getPeers = (torrent, socket = dgram.createSocket('udp4'), callback) => {
   const url = torrent.announce.toString('utf8');
-  const message = trackerRequest.buildConnectionRequest();
+  const connectionReqMsg = trackerRequest.buildConnectionRequest();
 
-  this.sendUdpMessage(socket, message, url);
+  this.sendUdpMessage(socket, connectionReqMsg, url);
 
   socket.on('message', resp => {
     if (trackerParser.responseType(resp) === 'connect') {
       const connResp = trackerParser.parseConnectionResp(resp);
-      // build AnnounceRequestMessage
-      // send AnnounceRequestMessage
+      const announceReqMsg = trackerRequest.buildAnnounceRequest(connResp.connectionID, torrent);
+      this.sendUdpMessage(socket, announceReqMsg, url);
     } else {
       const announceResp = trackerParser.parseAnnounceResp(resp);
       callback(announceResp.peers);
