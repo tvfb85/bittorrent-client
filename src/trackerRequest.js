@@ -16,7 +16,7 @@ module.exports.buildConnectionRequest = () => {
   return buffer;
 };
 
-module.exports.buildAnnounceRequest = (connectionId, torrent) => {
+module.exports.buildAnnounceRequest = (connectionId, torrent, port=6881) => {
 
   const buffer = Buffer.alloc(98);
   connectionId.copy(buffer, 0);
@@ -30,6 +30,7 @@ module.exports.buildAnnounceRequest = (connectionId, torrent) => {
   // leave 4 bytes as 0 to indicate unspecified event
   // leave 4 bytes as 0 to indicate unspecified IP address
   crypto.randomBytes(4).copy(buffer, 88);
-
+  buffer.writeInt32BE(-1, 92);
+  buffer.writeUInt16BE(port, 96);
   return buffer;
 };

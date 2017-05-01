@@ -110,7 +110,15 @@ describe('Tracker requests', () => {
 
     it("saves random bytes as a key", () => {
       expect(announceRequest.readUInt32BE(88)).not.toEqual(0);
-    })
+    });
+
+    it("saves numwant as the default of -1", () => {
+      expect(announceRequest.readInt32BE(92)).toEqual(-1);
+    });
+
+    it("saves the port as the default 6881", () => {
+      expect(announceRequest.readUInt16BE(96)).toEqual(6881);
+    });
 
   });
 
