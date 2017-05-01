@@ -6,7 +6,7 @@ const messageParser = require('../src/messageParser');
 const Buffer = require('buffer').Buffer;
 const bencode = require('bencode');
 const crypto = require('crypto');
-const connect = require('../src/connect');
+const connection = require('../src/connection');
 const fs = require('fs');
 
 let dummySocket = {
@@ -60,13 +60,13 @@ describe("connector functions", () => {
 
   it('creates a new socket with peer', () => {
     spyOn(net.Socket.prototype, "on");
-    connect(peer);
+    connection.make(peer);
     expect(net.Socket.prototype.on).toHaveBeenCalled();
   });
 
   it('should connect to the socket', () => {
     spyOn(net.Socket.prototype, "connect");
-    connect(peer);
+    connection.make(peer);
     expect(net.Socket.prototype.connect).toHaveBeenCalledWith(peer.port, peer.ip, jasmine.any(Function));
   });
 
@@ -75,13 +75,13 @@ describe("connector functions", () => {
       return dummySocket.write('hello');
     };
     spyOn(dummySocket, "write");
-    connect(peer, torrent, dummyPieces, dummyQueue, 'filepath', dummySocket);
+    connection.make(peer, torrent, dummyPieces, dummyQueue, 'filepath', dummySocket);
     expect(dummySocket.write).toHaveBeenCalled();
   });
 
   it('should listen for data', () => {
     const socketOnSpy = spyOn(dummySocket, 'on').andCallThrough();
-    connect(peer, torrent, dummyPieces, dummyQueue, 'filepath', dummySocket);
+    connection.make(peer, torrent, dummyPieces, dummyQueue, 'filepath', dummySocket);
     expect(socketOnSpy).toHaveBeenCalledWith('data', jasmine.any(Function));
   });
 
@@ -89,7 +89,7 @@ describe("connector functions", () => {
     const socketSpy = spyOn(dummySocket, 'on').andCallThrough();
     const callbackMock = {cb: ()=>{}};
     const callbackSpy = spyOn(callbackMock, 'cb');
-    connect.connectors.dataHandler(dummySocket, callbackSpy);
+    connection.connectors.dataHandler(dummySocket, callbackSpy);
     socketSpy.baseObj._events.data(handshakeMock);
     expect(callbackSpy).toHaveBeenCalledWith(jasmine.any(Buffer));
   })
@@ -99,13 +99,13 @@ describe("connector functions", () => {
     it('gets expected message length for handshake', () => {
       let msg = message.buildHandshake(torrent);
       let handshake = true;
-      expect(connect.connectors.getExpectedMessageLength(msg, handshake)).toEqual(68)
+      expect(connection.connectors.getExpectedMessageLength(msg, handshake)).toEqual(68)
     });
 
     it('gets expected message length for an interested message', () => {
       let msg = message.buildInterested(torrent);
       let handshake = false;
-      expect(connect.connectors.getExpectedMessageLength(msg, handshake)).toEqual(5)
+      expect(connection.connectors.getExpectedMessageLength(msg, handshake)).toEqual(5)
     });
 
     it('gets expected message length for an request message', () => {
@@ -116,20 +116,20 @@ describe("connector functions", () => {
       };
       let msg = message.buildRequest(payload);
       let handshake = false;
-      expect(connect.connectors.getExpectedMessageLength(msg, handshake)).toEqual(17)
+      expect(connection.connectors.getExpectedMessageLength(msg, handshake)).toEqual(17)
     });
 
     it('knows when a received message is complete', () => {
       let completeMsg = message.buildHandshake(torrent);
       let expectedLength = () => { return 68; };
-      expect(connect.connectors.isWholeMessage(completeMsg, expectedLength)).toEqual(true)
+      expect(connection.connectors.isWholeMessage(completeMsg, expectedLength)).toEqual(true)
     });
 
     it('knows when a received message is incomplete', () => {
       let completeMsg = message.buildHandshake(torrent);
       let incompleteMsg = completeMsg.slice(60, 68);
       let expectedLength = () => { return 68; };
-      expect(connect.connectors.isWholeMessage(incompleteMsg, expectedLength)).toEqual(false)
+      expect(connection.connectors.isWholeMessage(incompleteMsg, expectedLength)).toEqual(false)
     });
 
   });
@@ -156,20 +156,20 @@ describe("connector functions", () => {
 
     it("checks the queue is not empty", ()=>{
       const lengthSpy = spyOn(queue, 'length');
-      connect.connectors.requestPiece(dummySocket, pieces, queue)
+      connection.connectors.requestPiece(dummySocket, pieces, queue)
       expect(lengthSpy).toHaveBeenCalled();
     });
 
     it("checks a piece is needed", ()=>{
       const neededSpy = spyOn(pieces, 'needed');
-      connect.connectors.requestPiece(dummySocket, pieces, queue)
+      connection.connectors.requestPiece(dummySocket, pieces, queue)
       expect(neededSpy).toHaveBeenCalledWith(pieceMock);
     });
 
     it("removes a piece from the download queue", ()=>{
       dummySocket['write'] = () => {};
       const removeFromQueueSpy = spyOn(queue, 'removeFromQueue').andCallThrough();
-      connect.connectors.requestPiece(dummySocket, pieces, queue)
+      connection.connectors.requestPiece(dummySocket, pieces, queue)
       expect(removeFromQueueSpy).toHaveBeenCalled();
     });
 
@@ -178,7 +178,7 @@ describe("connector functions", () => {
       const pieceSpy = spyOn(pieces, 'addRequested');
       const socketSpy = spyOn(dummySocket, 'write');
       const requestSpy = spyOn(message, 'buildRequest');
-      connect.connectors.requestPiece(dummySocket, pieces, queue)
+      connection.connectors.requestPiece(dummySocket, pieces, queue)
       expect(pieceSpy).toHaveBeenCalledWith(pieceMock);
       expect(requestSpy).toHaveBeenCalled();
       expect(socketSpy).toHaveBeenCalled();
@@ -188,7 +188,7 @@ describe("connector functions", () => {
       needed = false;
       const pieceSpy = spyOn(pieces, 'addRequested');
       const socketSpy = spyOn(dummySocket, 'write');
-      connect.connectors.requestPiece(dummySocket, pieces, queue)
+      connection.connectors.requestPiece(dummySocket, pieces, queue)
       expect(pieceSpy).not.toHaveBeenCalled();
       expect(socketSpy).not.toHaveBeenCalled();
     });
@@ -202,7 +202,7 @@ describe("handler functions", () => {
   it("sends an interested message if it receives a handshake", () => {
     spyOn(dummySocket, "write");
     const interestedMessage = spyOn(message, "buildInterested").andCallThrough();
-    connect.handlers.handle(testHandshake, dummySocket);
+    connection.handlers.handle(testHandshake, dummySocket);
     expect(interestedMessage).toHaveBeenCalled();
     expect(dummySocket.write).toHaveBeenCalled();
   });
@@ -210,29 +210,29 @@ describe("handler functions", () => {
   it("parses any non-handshake message", () => {
     const msg = "hello";
     const parseSpy = spyOn(messageParser, "parse").andReturn({id: 678});
-    connect.handlers.handle(msg, dummySocket);
+    connection.handlers.handle(msg, dummySocket);
     expect(parseSpy).toHaveBeenCalledWith(msg);
   });
 
   it("calls unchokeHandler when we get a unchoke Message", ()=>{
     const msg = "hello";
     const parseSpy = spyOn(messageParser, "parse").andReturn({id: 1});
-    const unchokeSpy = spyOn(connect.handlers, 'unchokeHandler');
-    connect.handlers.handle(msg, dummySocket, 'filePath', dummyPieces, dummyQueue);
+    const unchokeSpy = spyOn(connection.handlers, 'unchokeHandler');
+    connection.handlers.handle(msg, dummySocket, 'filePath', dummyPieces, dummyQueue);
     expect(unchokeSpy).toHaveBeenCalledWith(dummySocket, dummyPieces, dummyQueue);
   });
 
   it("calls pieceHandler when we get a piece Message", ()=>{
     const msg = "hello";
     const parseSpy = spyOn(messageParser, "parse").andReturn({id: 7, payload: msg});
-    spyOn(connect.handlers, 'pieceHandler');
-    connect.handlers.handle(msg, dummySocket, 'filePath', dummyPieces, dummyQueue, torrent);
-    expect(connect.handlers.pieceHandler).toHaveBeenCalledWith('filePath', msg, torrent, dummySocket, dummyPieces, dummyQueue);
+    spyOn(connection.handlers, 'pieceHandler');
+    connection.handlers.handle(msg, dummySocket, 'filePath', dummyPieces, dummyQueue, torrent);
+    expect(connection.handlers.pieceHandler).toHaveBeenCalledWith('filePath', msg, torrent, dummySocket, dummyPieces, dummyQueue);
   });
 
   it('calls requestPiece when called', () => {
-    const connectSpy = spyOn(connect.connectors, "requestPiece");
-    connect.handlers.unchokeHandler(dummySocket, dummyPieces, dummyQueue);
+    const connectSpy = spyOn(connection.connectors, "requestPiece");
+    connection.handlers.unchokeHandler(dummySocket, dummyPieces, dummyQueue);
     expect(connectSpy).toHaveBeenCalledWith(dummySocket, dummyPieces, dummyQueue);
   });
 
@@ -250,23 +250,23 @@ describe("pieceHandler", () => {
   it('writes a block from a payload to the file', () => {
     const piecesCompleteSpy = spyOn(pieces, 'isComplete').andReturn(false);
     const fileSpy = spyOn(fs, "write");
-    connect.handlers.pieceHandler('filePath', dummyPieceResp, torrent, dummySocket, pieces, dummyQueue);
+    connection.handlers.pieceHandler('filePath', dummyPieceResp, torrent, dummySocket, pieces, dummyQueue);
     expect(fileSpy).toHaveBeenCalledWith('filePath', dummyPieceResp.block, 0, dummyPieceResp.block.length, 16384, jasmine.any(Function));
   });
 
   it('requests the next piece in the queue', () => {
     const piecesCompleteSpy = spyOn(pieces, 'isComplete').andReturn(false);
     const fileSpy = spyOn(fs, "write");
-    const connectSpy = spyOn(connect.connectors, 'requestPiece');
-    connect.handlers.pieceHandler('filePath', dummyPieceResp, torrent, dummySocket, pieces, dummyQueue);
+    const connectSpy = spyOn(connection.connectors, 'requestPiece');
+    connection.handlers.pieceHandler('filePath', dummyPieceResp, torrent, dummySocket, pieces, dummyQueue);
     expect(connectSpy).toHaveBeenCalledWith(dummySocket, pieces, dummyQueue);
   });
 
   it('does not request another piece if file is complete', () => {
     const piecesCompleteSpy = spyOn(pieces, 'isComplete').andReturn(true);
     const fileSpy = spyOn(fs, "write");
-    const connectSpy = spyOn(connect.connectors, "requestPiece");
-    connect.handlers.pieceHandler('filePath', dummyPieceResp, torrent, dummySocket, pieces, dummyQueue);
+    const connectSpy = spyOn(connection.connectors, "requestPiece");
+    connection.handlers.pieceHandler('filePath', dummyPieceResp, torrent, dummySocket, pieces, dummyQueue);
     expect(connectSpy).not.toHaveBeenCalled();
   });
 
@@ -274,7 +274,7 @@ describe("pieceHandler", () => {
     const piecesCompleteSpy = spyOn(pieces, 'isComplete').andReturn(true);
     const fileSpy = spyOn(fs, "write");
     const socketSpy = spyOn(dummySocket, "end");
-    connect.handlers.pieceHandler('filePath', dummyPieceResp, torrent, dummySocket, pieces, dummyQueue);
+    connection.handlers.pieceHandler('filePath', dummyPieceResp, torrent, dummySocket, pieces, dummyQueue);
     expect(socketSpy).toHaveBeenCalled();
   });
 
@@ -283,7 +283,7 @@ describe("pieceHandler", () => {
     const fileSpy = spyOn(fs, "write");
     const fileCloseSpy = spyOn(fs, "closeSync");
     const socketSpy = spyOn(dummySocket, "end");
-    connect.handlers.pieceHandler('filePath', dummyPieceResp, torrent, dummySocket, pieces, dummyQueue);
+    connection.handlers.pieceHandler('filePath', dummyPieceResp, torrent, dummySocket, pieces, dummyQueue);
     expect(fileCloseSpy).toHaveBeenCalledWith('filePath');
   });
 

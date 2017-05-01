@@ -66,12 +66,12 @@ describe('trackerParser', () => {
 
   describe('parseConnectionResp', () => {
 
-    it('it is a function', () => {
+    it('parses a buffer and returns an object', () => {
       expect(trackerParser.parseConnectionResp(connRespMock)).toEqual(
         {
           action: 0,
           transactionID: 1,
-          connectionID: 'connecti'
+          connectionID: jasmine.any(Buffer)
         }
       )
     })

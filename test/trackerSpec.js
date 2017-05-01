@@ -51,7 +51,8 @@ describe('Tracker', () => {
     it('readies the socket', () => {
       const socket = dgram.createSocket('udp4')
       const socketSpy = spyOn(socket, 'on').andCallThrough();
-      tracker.getPeers(torrent, socket);
+      const callbackMock = {cb: ()=>{}};
+      tracker.getPeers(torrent, callbackMock, socket);
       expect(socketSpy).toHaveBeenCalled();
     });
 
@@ -69,7 +70,8 @@ describe('Tracker', () => {
         const realSocketSpy = spyOn(socket, 'on').andCallThrough();
         const announceReqSpy = spyOn(trackerRequest, 'buildAnnounceRequest');
         const trackerParserSpy = spyOn(trackerParser, 'parseConnectionResp').andCallThrough();
-        tracker.getPeers(torrent, socket);
+        const callbackMock = {cb: ()=>{}};
+        tracker.getPeers(torrent, callbackMock, socket);
         realSocketSpy.baseObj._events.message(connRespMock);
         expect(trackerParserSpy).toHaveBeenCalledWith(connRespMock);
       });
@@ -82,9 +84,9 @@ describe('Tracker', () => {
         const callbackMock = {cb: ()=>{}};
         const callbackSpy = spyOn(callbackMock, 'cb');
         const announceReqSpy = spyOn(trackerRequest, 'buildAnnounceRequest');
-        tracker.getPeers(torrent, socket, callbackSpy);
+        tracker.getPeers(torrent, callbackSpy, socket);
         realSocketSpy.baseObj._events.message(connRespMock);
-        expect(announceReqSpy).toHaveBeenCalledWith('connecti', torrent);
+        expect(announceReqSpy).toHaveBeenCalledWith(jasmine.any(Buffer), torrent);
       });
 
       it('calls the send message function with the announce request', () => {
@@ -94,7 +96,7 @@ describe('Tracker', () => {
         const callbackMock = {cb: ()=>{}};
         const callbackSpy = spyOn(callbackMock, 'cb');
         const announceReqSpy = spyOn(trackerRequest, 'buildAnnounceRequest');
-        tracker.getPeers(torrent, socket, callbackSpy);
+        tracker.getPeers(torrent, callbackSpy, socket);
         const messageSpy = spyOn(tracker, "sendUdpMessage");
         realSocketSpy.baseObj._events.message(connRespMock);
         expect(messageSpy).toHaveBeenCalled();
@@ -108,7 +110,7 @@ describe('Tracker', () => {
         const socket = dgram.createSocket('udp4');
         const realSocketSpy = spyOn(socket, 'on').andCallThrough();
         const trackerParserSpy = spyOn(trackerParser, 'parseAnnounceResp').andCallThrough();
-        tracker.getPeers(torrent, socket, ()=>{});
+        tracker.getPeers(torrent, ()=>{}, socket);
         realSocketSpy.baseObj._events.message(announceRespMock);
         expect(trackerParserSpy).toHaveBeenCalledWith(announceRespMock);
       });
@@ -119,7 +121,7 @@ describe('Tracker', () => {
         const trackerParserSpy = spyOn(trackerParser, 'parseAnnounceResp').andCallThrough();
         const callbackMock = {cb: ()=>{}};
         const callbackSpy = spyOn(callbackMock, 'cb');
-        tracker.getPeers(torrent, socket, callbackSpy);
+        tracker.getPeers(torrent, callbackSpy, socket);
         realSocketSpy.baseObj._events.message(announceRespMock);
         expect(callbackSpy).toHaveBeenCalledWith(jasmine.any(Object));
       });

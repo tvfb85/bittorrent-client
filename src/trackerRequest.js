@@ -17,7 +17,6 @@ module.exports.buildConnectionRequest = () => {
 };
 
 module.exports.buildAnnounceRequest = (connectionId, torrent, port=6881) => {
-
   const buffer = Buffer.alloc(98);
   connectionId.copy(buffer, 0);
   buffer.writeUInt32BE(1, 8);
