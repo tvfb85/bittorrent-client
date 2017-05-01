@@ -15,7 +15,6 @@ describe('Tracker requests', () => {
 
     beforeEach(() => {
       connectionRequest = trackerRequest.buildConnectionRequest();
-      console.log(connectionRequest.slice(0, 4).toString('utf8'));
     });
 
     it('has a length of 16', () => {
