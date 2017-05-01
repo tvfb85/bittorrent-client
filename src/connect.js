@@ -16,7 +16,6 @@ module.exports = (peer, torrent, pieces, queue, file, socket = new net.Socket())
 function dataHandler(socket, callback) {
   let handshake = true;
   let newBuffer = Buffer.alloc(0);
-
   socket.on('data', data => {
     let msgLen = () => { return getExpectedMessageLength(newBuffer, handshake); };
     newBuffer = Buffer.concat([newBuffer, data]);
@@ -26,17 +25,17 @@ function dataHandler(socket, callback) {
       handshake = false;
     }
   });
-}
+};
 
 function getExpectedMessageLength(message, handshake) {
   const handshakeLength = message.readUInt8(0) + 49;
   const nonHandshakeLength = message.readInt32BE(0) + 4;
   return handshake ? handshakeLength : nonHandshakeLength;
-}
+};
 
 function isWholeMessage(data, expectedLength) {
   return data.length >= 4 && data.length >= expectedLength(data);
-}
+};
 
 function requestPiece(socket, pieces, queue) {
   while (queue.length()) {
@@ -80,10 +79,10 @@ module.exports.connectors = {
   getExpectedMessageLength: getExpectedMessageLength,
   isWholeMessage: isWholeMessage,
   requestPiece: requestPiece
-}
+};
 
 module.exports.handlers = {
   handle: handle,
   unchokeHandler: unchokeHandler,
   pieceHandler: pieceHandler
-}
+};
