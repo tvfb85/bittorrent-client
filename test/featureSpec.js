@@ -1,6 +1,6 @@
 'use strict';
 
-const connect = require('../src/connect');
+const connection = require('../src/connection');
 const download = require('../src/download');
 const Pieces = require('../src/Pieces');
 const torrentParser = require('../src/torrentParser');

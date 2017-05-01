@@ -2,8 +2,8 @@
 
 const Pieces = require('./Pieces.js');
 const Queue = require('./Queue.js');
-const connect = require('./connect.js');
-const peer = require('./peer.js');
+const tracker = require('./tracker.js');
+const connection = require('./connection.js');
 const fs = require('fs');
 
 
@@ -25,6 +25,10 @@ module.exports = class {
   }
 
   start () {
-    connect(peer, this.torrent, this.pieces, this.queue, this.file);
+    tracker.getPeers(this.torrent, peers => {
+      peers.forEach(peer => {
+        connection.make(peer, this.torrent, this.pieces, this.queue, this.file);
+      });
+    });
   }
 };
