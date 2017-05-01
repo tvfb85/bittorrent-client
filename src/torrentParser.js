@@ -15,6 +15,8 @@ module.exports.infoHash = torrent => {
 }
 
 module.exports.size = torrent => {
-  const size = torrent.info.length; // TO DO: calculate the size for multiple files
+  const size = torrent.info.files ?
+    torrent.info.files.map(file => file.length).reduce((a, b) => a + b) :
+    torrent.info.length;
   return bignum.toBuffer(size, {size: 8});
 };
