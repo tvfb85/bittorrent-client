@@ -1,8 +1,8 @@
 'use strict';
 const dgram = require('dgram');
+const trackerParser = require('./trackerParser');
 
-module.exports.getPeers = (torrent, callback) => {
-  const socket = dgram.createSocket('udp4');
+module.exports.getPeers = (torrent, socket = dgram.createSocket('udp4'), callback) => {
   const url = torrent.announce.toString('utf8');
 
   socket.on('message', resp => {
@@ -14,5 +14,5 @@ module.exports.getPeers = (torrent, callback) => {
       const announceResp = trackerParser.parseAnnounceResp(resp);
       callback(announceResp.peers);
     }
-  })
+  });
 }

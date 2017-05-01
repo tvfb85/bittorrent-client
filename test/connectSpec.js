@@ -11,7 +11,8 @@ const fs = require('fs');
 
 let dummySocket = {
   write: ()=>{},
-  end: ()=>{}
+  end: ()=>{},
+  on: ()=>{}
 };
 let torrent = {
   info: {
@@ -31,6 +32,16 @@ let dummyPieceResp = {
     length: 10
   }
 };
+const handshakeMock = (() => {
+  const buffer = Buffer.alloc(68);
+  buffer.writeUInt8(19, 0); // pstrlen
+  buffer.write('BitTorrent protocol', 1); // pstr
+  buffer.writeUInt32BE(0, 20); // reserved pt1
+  buffer.writeUInt32BE(0, 24); // reserved pt2
+  buffer.write('this is the infohash', 28); // infohash
+  buffer.write('this is the peer__id', 48); // peerid
+  return buffer
+})();
 
 
 describe("connector functions", () => {
@@ -63,21 +74,25 @@ describe("connector functions", () => {
     dummySocket['connect'] = () => {
       return dummySocket.write('hello');
     };
-
     spyOn(dummySocket, "write");
-
     connect(peer, torrent, dummyPieces, dummyQueue, 'filepath', dummySocket);
     expect(dummySocket.write).toHaveBeenCalled();
   });
 
   it('should listen for data', () => {
-    dummySocket['on'] = () => {};
-
-    spyOn(dummySocket, "on").andCallThrough();
-
+    const socketOnSpy = spyOn(dummySocket, 'on').andCallThrough();
     connect(peer, torrent, dummyPieces, dummyQueue, 'filepath', dummySocket);
-    expect(dummySocket.on).toHaveBeenCalledWith('data', jasmine.any(Function));
+    expect(socketOnSpy).toHaveBeenCalledWith('data', jasmine.any(Function));
   });
+
+  it("on receiving a handshake message, it will call the dataHandler callback", () => {
+    const socketSpy = spyOn(dummySocket, 'on').andCallThrough();
+    const callbackMock = {cb: ()=>{}};
+    const callbackSpy = spyOn(callbackMock, 'cb');
+    connect.connectors.dataHandler(dummySocket, callbackSpy);
+    socketSpy.baseObj._events.data(handshakeMock);
+    expect(callbackSpy).toHaveBeenCalledWith(jasmine.any(Buffer));
+  })
 
   describe("dataHandler helpers", () => {
 
