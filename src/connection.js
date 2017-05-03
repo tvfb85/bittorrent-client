@@ -55,9 +55,8 @@ function handle(msg, socket, file, pieces, queue, torrent) {
     socket.write(message.buildInterested());
   } else {
     const parsedMsg = messageParser.parse(msg);
-    if (parsedMsg.id === 1) {this.unchokeHandler(socket, pieces, queue)}
-    if (parsedMsg.id === 7) {
-      this.pieceHandler(file, parsedMsg.payload, torrent, socket, pieces, queue)}
+    if (parsedMsg.id === 1) this.unchokeHandler(socket, pieces, queue);
+    if (parsedMsg.id === 7) this.pieceHandler(file, parsedMsg.payload, torrent, socket, pieces, queue);
   }
 };
 

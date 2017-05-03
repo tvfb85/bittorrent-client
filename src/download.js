@@ -26,6 +26,7 @@ module.exports = class {
   start () {
     server.startServer(this.torrent);
     tracker.getPeers(this.torrent, peers => {
+      console.log(peers)
       peers.forEach(peer => {
         connection.make(peer, this.torrent, this.pieces, this.queue, this.file);
       });

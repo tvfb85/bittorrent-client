@@ -92,7 +92,7 @@ describe("connector functions", () => {
     connection.connectors.dataHandler(dummySocket, callbackSpy);
     socketSpy.baseObj._events.data(handshakeMock);
     expect(callbackSpy).toHaveBeenCalledWith(jasmine.any(Buffer));
-  })
+  });
 
   describe("dataHandler helpers", () => {
 
