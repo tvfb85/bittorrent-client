@@ -55,9 +55,11 @@ module.exports.buildRequest = (payload) => {
 }
 
 module.exports.buildPiece = payload => {
-  const buf = Buffer.alloc(payload.length.length + 13);
+  console.log('payload in the buildpiece: ')
+  console.log(payload)
+  const buf = Buffer.alloc(payload.block.length + 13);
   // length
-  buf.writeUInt32BE(payload.length.length + 9, 0);
+  buf.writeUInt32BE(payload.block.length + 9, 0);
   // id
   buf.writeUInt8(7, 4);
   // piece index
@@ -65,7 +67,8 @@ module.exports.buildPiece = payload => {
   // begin
   buf.writeUInt32BE(payload.begin, 9);
   // block
-  payload.length.copy(buf, 13);
+  payload.block.copy(buf, 13);
+  console.log(buf)
   return buf;
 };
 

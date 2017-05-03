@@ -7,6 +7,7 @@ module.exports.isHandshake = (message) => {
 
 module.exports.parse = (message) => {
   const msgId = message.readInt8(4);
+  console.log(msgId)
   let payload = null;
   if (message.length > 5 && msgId != 4 && msgId != 5) {
     payload = {
@@ -14,6 +15,7 @@ module.exports.parse = (message) => {
       begin: message.readInt32BE(9)
     };
     payload[msgId === 7 ? 'block' : 'length'] = message.slice(13);
+    console.log(payload)
   }
   return {
     size : message.readInt32BE(0),

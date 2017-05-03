@@ -8,6 +8,7 @@ const message = require('./message');
 
 module.exports.make = (peer, torrent, pieces, queue, file, socket = new net.Socket()) => {
   socket.on('error', console.log);
+  console.log(peer.port, peer.ip)
   socket.connect(peer.port, peer.ip, () => {
     socket.write(message.buildHandshake(torrent));
   });
