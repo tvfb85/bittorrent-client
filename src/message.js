@@ -55,8 +55,6 @@ module.exports.buildRequest = (payload) => {
 }
 
 module.exports.buildPiece = payload => {
-  console.log('payload in the buildpiece: ')
-  console.log(payload)
   const buf = Buffer.alloc(payload.block.length + 13);
   // length
   buf.writeUInt32BE(payload.block.length + 9, 0);
@@ -68,18 +66,15 @@ module.exports.buildPiece = payload => {
   buf.writeUInt32BE(payload.begin, 9);
   // block
   payload.block.copy(buf, 13);
-  console.log(buf)
   return buf;
 };
 
 
 module.exports.createPeerId = () => {
   let id = null;
-
   if (!id) {
     id = crypto.randomBytes(20);
     Buffer.from('-NVNF01-').copy(id, 0);
   }
-
   return id;
 };

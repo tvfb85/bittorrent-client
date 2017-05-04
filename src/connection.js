@@ -8,11 +8,10 @@ const message = require('./message');
 
 module.exports.make = (peer, torrent, pieces, queue, file, socket = new net.Socket()) => {
   socket.on('error', console.log);
-  console.log(peer.port, peer.ip)
   socket.connect(peer.port, peer.ip, () => {
     socket.write(message.buildHandshake(torrent));
   });
-  dataHandler(socket, wholeMsg => module.exports.handlers.handle(wholeMsg, socket, file, pieces, queue, torrent))
+  dataHandler(socket, wholeMsg => module.exports.handlers.handle(wholeMsg, socket, file, pieces, queue, torrent));
 };
 
 function dataHandler(socket, callback) {
@@ -27,7 +26,7 @@ function dataHandler(socket, callback) {
       handshake = false;
     }
   });
-};
+}
 
 function getExpectedMessageLength(message, handshake) {
   const handshakeLength = message.readUInt8(0) + 49;
@@ -58,11 +57,11 @@ function handle(msg, socket, file, pieces, queue, torrent) {
     if (parsedMsg.id === 1) this.unchokeHandler(socket, pieces, queue);
     if (parsedMsg.id === 7) this.pieceHandler(file, parsedMsg.payload, torrent, socket, pieces, queue);
   }
-};
+}
 
 function unchokeHandler(socket, pieces, queue) {
   module.exports.connectors.requestPiece(socket, pieces, queue);
-};
+}
 
 function pieceHandler(file, pieceData, torrent, socket, pieces, queue) {
   const offset = pieceData.index * torrent.info['piece length'] + pieceData.begin;
@@ -71,9 +70,9 @@ function pieceHandler(file, pieceData, torrent, socket, pieces, queue) {
     socket.end();
     try { fs.closeSync(file); } catch(e) { }
   } else {
-    module.exports.connectors.requestPiece(socket, pieces, queue)
+    module.exports.connectors.requestPiece(socket, pieces, queue);
   }
-};
+}
 
 module.exports.connectors = {
   dataHandler: dataHandler,

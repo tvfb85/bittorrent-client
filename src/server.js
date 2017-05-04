@@ -11,7 +11,7 @@ module.exports.startServer = (torrent) => {
     connection.connectors.dataHandler(socket, msg => module.exports.leechHandler(msg, socket, torrent));
   });
   server.listen(6881);
-}
+};
 
 module.exports.leechHandler = (msg, socket, torrent) => {
   if (messageParser.isHandshake(msg)) {
@@ -19,10 +19,9 @@ module.exports.leechHandler = (msg, socket, torrent) => {
   } else {
     const parsedMsg = messageParser.parse(msg);
     if (parsedMsg.id === 2) module.exports.sendHaveMessages(socket, torrent, parsedMsg.payload);
-    if (parsedMsg.id === 6) {
-      module.exports.requestHandler(socket, torrent, parsedMsg.payload)}
+    if (parsedMsg.id === 6) module.exports.requestHandler(socket, torrent, parsedMsg.payload);
   }
-}
+};
 
 module.exports.sendHaveMessages = (socket, torrent, msg) => {
   const pieces = new Pieces(torrent);
@@ -43,4 +42,4 @@ module.exports.requestHandler = (socket, torrent, msg) => {
     };
     socket.write(message.buildPiece(piece));
   });
-}
+};
