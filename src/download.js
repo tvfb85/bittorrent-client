@@ -5,8 +5,7 @@ const Queue = require('./Queue.js');
 const tracker = require('./tracker.js');
 const connection = require('./connection.js');
 const fs = require('fs');
-
-
+const server = require('./server')
 
 module.exports = class {
   constructor(torrent, path) {
@@ -17,7 +16,7 @@ module.exports = class {
     this.addAllPiecesToQueue(torrent);
   }
 
-  addAllPiecesToQueue () {
+  addAllPiecesToQueue (torrent) {
     const numberPieces = Math.ceil(this.torrent.info.length / this.torrent.info["piece length"]);
     for(let i = 0; i < numberPieces; i++) {
       this.queue.addToQueue(i);
@@ -25,6 +24,7 @@ module.exports = class {
   }
 
   start () {
+    server.startServer(this.torrent);
     tracker.getPeers(this.torrent, peers => {
       peers.forEach(peer => {
         connection.make(peer, this.torrent, this.pieces, this.queue, this.file);

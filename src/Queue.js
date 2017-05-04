@@ -7,7 +7,7 @@ module.exports = class {
   }
 
   addToQueue(pieceIndex) {
-    const piece = {   // TO DO: make this blocks per piece
+    const piece = {  
       index: pieceIndex,
       begin: 0,
       pieceLength: this._torrent.info['piece length']

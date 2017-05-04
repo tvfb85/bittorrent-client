@@ -10,7 +10,7 @@ module.exports.parseConnectionResp = (resp) => {
     transactionID: resp.readUInt32BE(4),
     connectionID: resp.slice(8)
   }
-}
+};
 
 module.exports.parseAnnounceResp = (resp) => {
   function groupPeerAddresses(allPeerData, groupSize = 6) {
@@ -19,9 +19,9 @@ module.exports.parseAnnounceResp = (resp) => {
       group.push(allPeerData.slice(i*groupSize, i*groupSize + 6));
     }
     return group;
-  };
+  }
 
   return {
     peers: groupPeerAddresses(resp.slice(20)).map(peer => { return {ip: peer.slice(0,4).join('.'), port: peer.readUInt16BE(4)}})
-  }
+  };
 };
