@@ -2,9 +2,9 @@
 
 ### Approach ###
 
-Minimum Viable Product: "A client that downloads a file from a single peer, using the BitTorrent Protocol"
-Version 1: "A client that can connect to multiple peers to download a file"
-Version 2: "A client that supports seeding"
+- Minimum Viable Product: "A client that downloads a file from a single peer, using the BitTorrent Protocol"
+- Version 1: "A client that can connect to multiple peers to download a file"
+- Version 2: "A client that supports seeding"
 
 ### USER STORIES ###
 
