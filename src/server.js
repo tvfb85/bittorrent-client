@@ -19,12 +19,12 @@ module.exports.leechHandler = (msg, socket, torrent) => {
   } else {
     const parsedMsg = messageParser.parse(msg);
     if (parsedMsg.id === 2) module.exports.sendHaveMessages(socket, torrent, parsedMsg.payload);
-    if (parsedMsg.id === 6) module.exports.requestHandler(socket, torrent, parsedMsg.payload)
+    if (parsedMsg.id === 6) {
+      module.exports.requestHandler(socket, torrent, parsedMsg.payload)}
   }
 }
 
 module.exports.sendHaveMessages = (socket, torrent, msg) => {
-  console.log('sending the have messages')
   const pieces = new Pieces(torrent);
   const nPieces = pieces._requested;
   nPieces.forEach((piece, index) => socket.write(message.buildHave(index)));

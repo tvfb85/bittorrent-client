@@ -49,10 +49,11 @@ describe("leechHandler", () => {
 
   it("calls request handler when we get a request Message", () => {
     const msg = "hello";
-    const parseSpy = spyOn(messageParser, "parse").andReturn({id: 6});
+    const messageParserSpy = spyOn(messageParser, "isHandshake").andReturn(false);
+    const parseSpy = spyOn(messageParser, "parse").andReturn({id: 6, payload: {}});
     const requestSpy = spyOn(server, 'requestHandler');
     server.leechHandler(msg, dummySocket, torrent);
-    expect(requestSpy).toHaveBeenCalledWith(dummySocket, torrent, msg);
+    expect(requestSpy).toHaveBeenCalled();
   });
 
 });
