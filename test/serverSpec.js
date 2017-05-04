@@ -4,6 +4,7 @@ const net = require('net');
 const message = require('../src/message');
 const messageParser = require('../src/messageParser');
 const server = require('../src/server');
+const fs = require('fs');
 
 describe("leechHandler", () => {
 
@@ -47,6 +48,14 @@ describe("leechHandler", () => {
     expect(dummySocket.write).toHaveBeenCalled();
   });
 
+  it("calls the sendHaveMessage handler when it receives an interested message", () => {
+    const msg = "hello";
+    const parseSpy = spyOn(messageParser, "parse").andReturn({id: 2});
+    const haveMessageSpy = spyOn(server, 'sendHaveMessages');
+    server.leechHandler(msg, dummySocket, torrent);
+    expect(haveMessageSpy).toHaveBeenCalled();
+  });
+
   it("calls request handler when we get a request Message", () => {
     const msg = "hello";
     const messageParserSpy = spyOn(messageParser, "isHandshake").andReturn(false);
@@ -55,5 +64,23 @@ describe("leechHandler", () => {
     server.leechHandler(msg, dummySocket, torrent);
     expect(requestSpy).toHaveBeenCalled();
   });
+
+  it('sends an unchoke message after sending have messages', () => {
+    const msg = "hello";
+    spyOn(dummySocket, "write");
+    const buildHaveSpy = spyOn(message, 'buildHave');
+    const buildUnChokeSpy = spyOn(message, 'buildUnchoke');
+    server.sendHaveMessages(dummySocket, torrent, msg);
+    expect(buildHaveSpy).toHaveBeenCalled();
+    expect(buildUnChokeSpy).toHaveBeenCalled();
+  })
+
+  it('reads the file to find the correct piece after receiving a piece request', () => {
+    const msg = "hello";
+    const fileOpenSyncSpy = spyOn(fs, 'openSync');
+    const fileReadSpy = spyOn(fs, 'read');
+    server.requestHandler(dummySocket, torrent, msg);
+    expect(fileReadSpy).toHaveBeenCalled();
+  })
 
 });
